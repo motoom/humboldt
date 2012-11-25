@@ -5,6 +5,7 @@
 #
 
 import xml.etree.ElementTree as ET
+from collections import namedtuple as namtup
 
 def parsesvgcoords(lines):
     """Given a path from SVG, extract the coordinates.
@@ -77,15 +78,14 @@ def readfile(fn):
                     errors.append("Error in group %s, %s: Unexpected image data URL (too many parts)" % (groupid, grouplabel))
                     continue
                 format, encoded = parts
-                _, mimetype = format.split(":")
+                _, mime = format.split(":")
                 parts = encoded.split(",")
                 if len(parts) != 2:
                     errors.append("Error in group %s, %s: Unexpected image data URL (encoding, encoded data expected)" % (groupid, grouplabel))
                     continue
                 encoding, encoded = parts
-                imgbytes = encoded.decode(encoding)
-                # print "Background image: mimetype=%s, x=%.2f, y=%.2f, width=%.2f, height=%.2f, imgbytes=%d bytes" % (mimetype, x, y, width, height, len(imgbytes))
-                background = (mimetype, x, y, width, height, imgbytes)
+                img = encoded.decode(encoding)
+                background = namtup("Background", "img mimetype x y width height")(img, mime, x, y, width, height)
             if item.tag.endswith("path"): # Must be in layer2, Regions
                 assert groupnr == 1
                 titleitem = item.find("svg:title", namespaces=namespaces)
@@ -97,12 +97,6 @@ def readfile(fn):
                 coords, error = parsesvgcoords(datalines)
                 if not error:
                     regions.append((title, coords))
-                    '''
-                    if len(coords) < 7:
-                        print "%s: %s" % (title, coords)
-                    else:
-                        print "%s: %d coordinates" % (title, len(coords))
-                    '''
                 else:
                     errors.append("Error in '%s': %s" % (title, error))
 
@@ -112,5 +106,6 @@ def readfile(fn):
 
 if __name__ == "__main__":
     meta, background, regions = readfile("usa-states.svg")
+    print "Background: %dx%d, %d bytes" % (background.width, background.height, len(background.img))
     print meta
     print "%d regions" % len(regions)

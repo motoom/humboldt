@@ -78,7 +78,13 @@ class MainFrame(QtGui.QMainWindow):
 
         meta, background, regions = svgreader.readfile("usa-states.svg")
         errors = meta[3]
-        if errors: print errors
+        if errors:
+            print errors
+        pixmap = QtGui.QPixmap()
+        pixmap.loadFromData(background.img)
+        item = QtGui.QGraphicsPixmapItem(pixmap)
+        self.scene.addItem(item)
+        
         for region in regions:
             title, coords = region
             polyf = QtGui.QPolygonF([QtCore.QPointF(x,y) for (x,y) in coords])
