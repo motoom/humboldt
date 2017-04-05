@@ -90,7 +90,7 @@ class MainFrame(QtGui.QMainWindow):
         bkbrush = QtGui.QBrush(self.palette().color(QtGui.QPalette.Window))
         view.setBackgroundBrush(bkbrush)
         toptobottom.addWidget(view)
-        view.setFrameStyle(QtGui.QFrame.NoFrame) # Geen border om kaart heen.
+        view.setFrameStyle(QtGui.QFrame.NoFrame) # No border around chart.
 
         self.scene = QtGui.QGraphicsScene()
         view.setScene(self.scene)
